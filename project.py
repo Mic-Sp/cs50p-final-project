@@ -1,6 +1,8 @@
 from encryptor import Encryptor
 import secrets
 import string
+import sys
+import os
 
 def menu():
     usr_inp = None
@@ -22,6 +24,7 @@ def menu():
                 gen_sec_pass_submenu()
             case _:
                 print("\n[-] Invalid option. Please select 1, 2, 3, or 4.")
+    sys.exit("Your messages are secure. El Psy Kongroo!")
 
 def encrypt_submenu():    
     usr_inp = None
@@ -30,27 +33,26 @@ def encrypt_submenu():
         print("# 1 - Encrypt string")
         print("# 2 - Encrypt file")
         print("# 3 - Return to previous menu")
-        print("#"*22)
         usr_inp = input("\nEnter choice: ")
         match usr_inp:
             case "1":
                 encrypt_string_submenu()
             case "2":
-                ...
+                encrypt_file_submenu()
 
 def encrypt_string_submenu():
     usr_inp = None
     while usr_inp != "4":
         print("\n#####Encrypt String#####")
-        print("# 1 - Provide your own key.")
-        print("# 2 - Load a previous key.")
+        print("# 1 - Provide a manual key.")
+        print("# 2 - Load key from file 'key.key'.")
         print("# 3 - Generate a new key.")
         print("# 4 - Return to previous menu")
         usr_inp = input("\nEnter choice: ")
         match usr_inp:
             case "1":
-                usr_key = input("\nEnter your key: ").encode("utf-8") # have to encode the user input for Fernet to handle a key properly
-                my_tool = Encryptor(usr_key)
+                key_inp = input("\nEnter your key: ").encode("utf-8") # have to encode the user input for Fernet to handle a key properly
+                my_tool = Encryptor(key_inp)
                 usr_str = input("Enter message to encrypt: ")
                 print(f"Encrypted message: \n{my_tool.encrypt(usr_str)}")
                 return
@@ -70,6 +72,33 @@ def encrypt_string_submenu():
                 print("\n[-] Invalid option. Please select 1, 2, 3, or 4.")
     return
 
+def encrypt_file_submenu():
+    usr_inp = None
+    while usr_inp != "4":
+        print("\n#####Encrypt File#####")
+        print("# 1 - Provide a manual key.")
+        print("# 2 - Load key from file 'key.key'.")
+        print("# 3 - Generate a new key.")
+        print("# 4 - Return to previous menu")
+        usr_inp = input("\nEnter choice: ")
+        match usr_inp:
+            case "1":
+                key_inp = input("\nEnter your key: ").encode("utf-8") # have to encode the user input for Fernet to handle a key properly
+                my_tool = Encryptor(key_inp)
+            case "2":
+                my_tool = Encryptor(load_key=True)
+            case "3":
+                my_tool = Encryptor()
+                print("[+] Generated and saved new key.")
+                print(f"Your new key is: {my_tool.key.decode('utf-8')}")
+            case _: 
+                print("\n[-] Invalid option. Please select 1, 2, 3, or 4.")
+                continue
+
+        list_files()
+        filename = input("Enter filename to encrypt: ")
+        my_tool.encrypt_file(filename)
+        return
 
 def decrypt_submenu(): 
     usr_inp = None
@@ -78,26 +107,26 @@ def decrypt_submenu():
         print("# 1 - Decrypt string")
         print("# 2 - Decrypt file")
         print("# 3 - Return to previous menu")
-        print("#"*22)
+
         usr_inp = input("\nEnter choice: ")
         match usr_inp:
             case "1":
                 decrypt_string_submenu()
             case "2":
-                ...
+                decrypt_file_submenu()
 
 def decrypt_string_submenu():
     usr_inp = None
     while usr_inp != "3":
         print("\n#####Decrypt String#####")
-        print("# 1 - Provide your own key.")
+        print("# 1 - Provide a manual key.")
         print("# 2 - Load key from file 'key.key'.")
         print("# 3 - Return to previous menu")
         usr_inp = input("\nEnter choice: ")
         match usr_inp:
             case "1":
-                usr_key = input("\nEnter your key: ").encode("utf-8") # have to encode the user input for Fernet to handle a key properly
-                my_tool = Encryptor(usr_key)
+                key_inp = input("\nEnter your key: ").encode("utf-8") # have to encode the user input for Fernet to handle a key properly
+                my_tool = Encryptor(key_inp)
                 usr_str = input("Enter message to decrypt: ")
                 try:
                     print(f"Decrypted message: \n{my_tool.decrypt(usr_str)}")
@@ -115,6 +144,29 @@ def decrypt_string_submenu():
             case _: 
                 print("\n[-] Invalid option. Please select 1, 2, 3, or 4.")
     return
+
+def decrypt_file_submenu():
+    usr_inp = None
+    while usr_inp != "3":
+        print("\n#####Decrypt File#####")
+        print("# 1 - Provide a manual key.")
+        print("# 2 - Load key from file 'key.key'.")
+        print("# 3 - Return to previous menu")
+        usr_inp = input("\nEnter choice: ")
+        match usr_inp:
+            case "1":
+                key_inp = input("\nEnter your key: ").encode("utf-8") # have to encode the user input for Fernet to handle a key properly
+                my_tool = Encryptor(key_inp)
+            case "2":
+                my_tool = Encryptor(load_key=True)
+            case _: 
+                print("\n[-] Invalid option. Please select 1, 2, 3, or 4.")
+                continue
+        
+        list_files()
+        filename = input("Enter filename to decrypt: ")
+        my_tool.decrypt_file(filename)
+        return
 
 def gen_sec_pass_submenu():
     print("\n#####Secure Password Menu#####")
@@ -146,7 +198,16 @@ def secure_pass(length):
         strong_pass.append(secrets.choice(string.ascii_letters + string.digits + string.punctuation))
     secrets.SystemRandom().shuffle(strong_pass)
     return(f'{"".join(strong_pass)}\n')
+
+def list_files():
+    files = [f for f in os.listdir('.') if os.path.isfile(f)]
     
+    print("\n--- Files in current directory ---")
+    for i, f in enumerate(files, 1):
+        print(f"{i} - {f}")
+    print("----------------------------------")
+    return files
+
 def main():
     menu()
     
