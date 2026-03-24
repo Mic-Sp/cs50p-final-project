@@ -22,6 +22,8 @@ def menu():
                 decrypt_submenu()
             case "3":
                 gen_sec_pass_submenu()
+            case _:
+                print("\n[-] Invalid option. Please select 1, 2, 3, or 4.")
 
 def encrypt_submenu():
     print("\n#####Encrypt Menu#####")
@@ -59,14 +61,22 @@ def gen_sec_pass_submenu():
         if usr_inp == 0:
             return
         elif 8 <= usr_inp <= 30:       
-            secure_pass(usr_inp)
+            print(f"\n[+] Generated Password: {secure_pass(usr_inp)}")
             return
+        else:
+            print("\n[-] Password must be between 8 and 30 characters.")
 
 def secure_pass(length):
-    strong_pass = ""
-    for _ in range(length):
-        strong_pass += secrets.choice(string.ascii_letters + string.digits + string.punctuation)
-    print(f"\n[+] Generated Password: {strong_pass}\n")
+    strong_pass = [
+        secrets.choice(string.ascii_lowercase),
+        secrets.choice(string.ascii_uppercase),
+        secrets.choice(string.digits),
+        secrets.choice(string.punctuation)
+    ]
+    for _ in range(length - 4):
+        strong_pass.append(secrets.choice(string.ascii_letters + string.digits + string.punctuation))
+    secrets.SystemRandom().shuffle(strong_pass)
+    return(f'{"".join(strong_pass)}\n')
     
 def main():
     menu()
