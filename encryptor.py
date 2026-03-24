@@ -18,9 +18,40 @@ class Encryptor:
         return encrypted.decode("utf-8") # decode puts it back to a string
     
     def decrypt(self, encrypted_text:str):
-        str_bytes = encrypted_text.encode("utf-8")
-        decrypted = self.cipher.decrypt(str_bytes)
-        return decrypted.decode("utf-8")
+        try:
+            str_bytes = encrypted_text.encode("utf-8")
+            decrypted = self.cipher.decrypt(str_bytes)
+            return decrypted.decode("utf-8")
+        except Exception:
+            return "[-] Decryption failed. Invalid key or corrupted data."
+    
+    def encrypt_file(self, filename):
+        try:
+            with open(filename, "rb") as file: #"rb" is for read binary
+                data = file.read()
+            
+            encrypted_data = self.cipher.encrypt(data)
+            
+            with open(f"{filename}.encrypted", "wb") as file:
+                file.write(encrypted_data)
+            
+            print(f"[+] {filename} encrypted successfully.\nEncrypted file: {filename}.encrypted")
+        except FileNotFoundError:
+            print(f"[-] Error: '{filename}' not found.")
+    
+    def decrypt_file(self, filename):
+        try:
+            with open(filename, "rb") as file: #"rb" is for read binary
+                data = file.read()
+            
+            decrypted_data = self.cipher.decrypt(data)
+            
+            with open(f"{filename}.decrypted", "wb") as file:
+                file.write(decrypted_data)
+            
+            print(f"[+] {filename} decrypted successfully.\nFile saved as: {filename}.decrypted")
+        except (FileNotFoundError, Exception):
+            print(f"[-] Error: '{filename}' not found or wrong key.")
     
     def save_key(self):
         with open("key.key", "wb") as file:

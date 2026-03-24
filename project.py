@@ -3,7 +3,6 @@ import secrets
 import string
 
 def menu():
-    
     usr_inp = None
     while usr_inp != "4":
         print("\n" + "#"*30)
@@ -83,10 +82,39 @@ def decrypt_submenu():
         usr_inp = input("\nEnter choice: ")
         match usr_inp:
             case "1":
-                ...
+                decrypt_string_submenu()
             case "2":
                 ...
 
+def decrypt_string_submenu():
+    usr_inp = None
+    while usr_inp != "3":
+        print("\n#####Decrypt String#####")
+        print("# 1 - Provide your own key.")
+        print("# 2 - Load key from file 'key.key'.")
+        print("# 3 - Return to previous menu")
+        usr_inp = input("\nEnter choice: ")
+        match usr_inp:
+            case "1":
+                usr_key = input("\nEnter your key: ").encode("utf-8") # have to encode the user input for Fernet to handle a key properly
+                my_tool = Encryptor(usr_key)
+                usr_str = input("Enter message to decrypt: ")
+                try:
+                    print(f"Decrypted message: \n{my_tool.decrypt(usr_str)}")
+                except Exception:
+                    print("\n[-] Decryption failed! Check your key or message.")
+                return
+            case "2":
+                my_tool = Encryptor(load_key=True)
+                usr_str = input("Enter message to decrypt: ")
+                try:
+                    print(f"Decrypted message: \n{my_tool.decrypt(usr_str)}")
+                except Exception:
+                    print("\n[-] Decryption failed! Check your key or message.")
+                return
+            case _: 
+                print("\n[-] Invalid option. Please select 1, 2, 3, or 4.")
+    return
 
 def gen_sec_pass_submenu():
     print("\n#####Secure Password Menu#####")
