@@ -1,7 +1,6 @@
 from encryptor import Encryptor
 import secrets
 import string
-import sys
 
 def menu():
     
@@ -25,27 +24,69 @@ def menu():
             case _:
                 print("\n[-] Invalid option. Please select 1, 2, 3, or 4.")
 
-def encrypt_submenu():
-    print("\n#####Encrypt Menu#####")
-    print("# 1 - Encrypt string")
-    print("# 2 - Encrypt file")
-    print("# 3 - Return to previous menu")
-    print("#"*22)
-    
+def encrypt_submenu():    
     usr_inp = None
     while usr_inp != "3":
+        print("\n#####Encrypt Menu#####")
+        print("# 1 - Encrypt string")
+        print("# 2 - Encrypt file")
+        print("# 3 - Return to previous menu")
+        print("#"*22)
         usr_inp = input("\nEnter choice: ")
+        match usr_inp:
+            case "1":
+                encrypt_string_submenu()
+            case "2":
+                ...
 
-def decrypt_submenu():
-    print("\n#####Decrypt Menu#####")
-    print("# 1 - Decrypt string")
-    print("# 2 - Decrypt file")
-    print("# 3 - Return to previous menu")
-    print("#"*22)
-    
+def encrypt_string_submenu():
+    usr_inp = None
+    while usr_inp != "4":
+        print("\n#####Encrypt String#####")
+        print("# 1 - Provide your own key.")
+        print("# 2 - Load a previous key.")
+        print("# 3 - Generate a new key.")
+        print("# 4 - Return to previous menu")
+        usr_inp = input("\nEnter choice: ")
+        match usr_inp:
+            case "1":
+                usr_key = input("\nEnter your key: ").encode("utf-8") # have to encode the user input for Fernet to handle a key properly
+                my_tool = Encryptor(usr_key)
+                usr_str = input("Enter message to encrypt: ")
+                print(f"Encrypted message: \n{my_tool.encrypt(usr_str)}")
+                return
+            case "2":
+                my_tool = Encryptor(load_key=True)
+                usr_str = input("Enter message to encrypt: ")
+                print(f"Encrypted message: \n{my_tool.encrypt(usr_str)}")
+                return
+            case "3":
+                my_tool = Encryptor()
+                print("[+] Generated and saved new key.")
+                print(f"Your new key is: {my_tool.key.decode('utf-8')}")
+                usr_str = input("Enter message to encrypt: ")
+                print(f"Encrypted message: \n{my_tool.encrypt(usr_str)}")
+                return
+            case _: 
+                print("\n[-] Invalid option. Please select 1, 2, 3, or 4.")
+    return
+
+
+def decrypt_submenu(): 
     usr_inp = None
     while usr_inp != "3":
+        print("\n#####Decrypt Menu#####")
+        print("# 1 - Decrypt string")
+        print("# 2 - Decrypt file")
+        print("# 3 - Return to previous menu")
+        print("#"*22)
         usr_inp = input("\nEnter choice: ")
+        match usr_inp:
+            case "1":
+                ...
+            case "2":
+                ...
+
 
 def gen_sec_pass_submenu():
     print("\n#####Secure Password Menu#####")
@@ -55,7 +96,7 @@ def gen_sec_pass_submenu():
         try:
             usr_inp = int(input('Enter length of password(8 to 30) or "0" to return to previous menu: '))
         except ValueError:
-            print("Invalid value. Please enter a number.\n")
+            print("\n[-] Invalid value. Please enter a number.\n")
             continue
             
         if usr_inp == 0:
